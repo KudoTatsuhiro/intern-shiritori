@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+
+<body>
+    <div id="top" class="big-bg">
+    <h1>しりとり</h1>
+    <p id="previousWord"></p>
+    <div class="box">
+        <input id="nextWordInput" type="text" />
+        <button id="nextWordSendButton">送信</button>
+    </div>
+
+    <script type="module">
+        window.onload = async (event) => {
+            await fetch("/shiritori", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nextWord: "りんご" })
+            });
+
+            const response = await fetch("/shiritori");
+            const previousWord = await response.text();
+
+            const para = document.querySelector("#previousWord");
+            para.innerText = `前の単語：${previousWord}`;
+        };
+
+        document.querySelector("#nextWordSendButton").onclick = async (event) => {
+            const nextWord = document.querySelector("#nextWordInput").value;
+            const response = await fetch("/shiritori", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nextWord })
+            });
+            if (response.status / 100 == 4) {
+                alert(await response.text());
+                return;
+            }
+
+            if (response.status / 100 == 5) {
+                alert(await response.text());
+                window.location.href = "end.html";
+                return;
+            }
+            const previousWord = await response.text();
+
+            const para = document.querySelector("#previousWord");
+            para.innerText = `前の単語：${previousWord}`;
+        };
+    </script>
+    </div>
+</body>
+
+
+</html>
